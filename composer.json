@@ -1,0 +1,41 @@
+{
+  "name": "it-bens/object-transformer",
+  "description": "Mediator that performs transformations between objects by using transformation strategies.",
+  "type": "package",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Martin Bens",
+      "email": "martin.bens@it-bens.de"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.3"
+  },
+  "require-dev": {
+    "captainhook/plugin-composer": "^5.3",
+    "phpunit/phpunit": "^7.5",
+    "roave/security-advisories": "dev-latest",
+    "it-bens/object-transformer-test-utilities": "*@dev",
+    "symfony/polyfill-php72": "^1.23"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "ITB\\ObjectTransformer\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ITB\\ObjectTransformer\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "vendor/bin/captainhook install -f -s"
+    ]
+  }
+}

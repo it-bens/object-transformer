@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  composer:
+    build: docker/development
+    volumes:
+      - .:/var/www/html/
+
+  phpunit:
+    build:
+      context: docker
+      dockerfile: test/phpunit/Dockerfile
+    volumes:
+      - .:/var/www/html/
