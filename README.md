@@ -1,11 +1,15 @@
 # The Object Transformer
 
+![Maintenance Status](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+[![Build Status](https://app.travis-ci.com/it-bens/object-transformer.svg?branch=master)](https://app.travis-ci.com/it-bens/object-transformer)
+[![Coverage Status](https://coveralls.io/repos/github/it-bens/object-transformer/badge.svg?branch=master)](https://coveralls.io/github/it-bens/object-transformer?branch=master)
+
 ## How to install the package?
 The package can be installed via Composer:
 ```bash
 composer require it-bens/object-transformer
 ```
-It requires at least PHP 7.1 (chosen to be compatible with Symfony 4), but no other extensions or packages.
+It requires at least PHP 8, but no other extensions or packages.
 
 ## How to use the Object Transformer?
 First at least one implementation of the `TransformerInterface` has to be created.
