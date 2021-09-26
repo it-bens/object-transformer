@@ -10,9 +10,9 @@ use ITB\ObjectTransformer\Validation\ResultValidator;
 
 final class Transformation
 {
-    private $inputObject;
-    private $outputClass;
-    private $result;
+    private object $inputObject;
+    private string $outputClass;
+    private object $result;
 
     /**
      * @param object $inputObject

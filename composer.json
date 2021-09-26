@@ -10,14 +10,13 @@
     }
   ],
   "require": {
-    "php": ">=7.1.3"
+    "php": "^8.0"
   },
   "require-dev": {
     "captainhook/plugin-composer": "^5.3",
-    "phpunit/phpunit": "^7.5",
+    "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest",
-    "it-bens/object-transformer-test-utilities": "*@dev",
-    "symfony/polyfill-php72": "^1.23"
+    "it-bens/object-transformer-test-utilities": "*@dev"
   },
   "config": {
     "optimize-autoloader": true,

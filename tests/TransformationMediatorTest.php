@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 final class TransformationMediatorTest extends TestCase
 {
     /** @var TransformationMediator $mediator */
-    private $mediator;
+    private TransformationMediator $mediator;
 
     public function setUp(): void
     {

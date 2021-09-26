@@ -18,15 +18,15 @@ final class TransformationMediator implements TransformationMediatorInterface
     /**
      * @var TransformerInterface[][][]
      */
-    private $transformers = [];
+    private array $transformers = [];
 
     /** @var iterable $transformersGenerator */
-    private $transformersGenerator;
+    private iterable $transformersGenerator;
     /** @var bool $transformersPopulated */
-    private $transformersPopulated = false;
+    private bool $transformersPopulated = false;
 
     /** @var array $transformations */
-    private $transformations;
+    private array $transformations;
 
     /**
      * @param iterable $transformers
