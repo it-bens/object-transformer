@@ -1,0 +1,23 @@
+language: php
+sudo: false
+dist: xenial
+
+env:
+  global:
+    - PHPUNIT_FLAGS="-v"
+    - XDEBUG_MODE="coverage"
+
+install:
+  - travis_retry composer update -n --prefer-dist --prefer-stable
+
+script:
+  - composer validate --strict --no-check-lock
+  - vendor/bin/phpunit -v -c phpunit.xml.dist --coverage-clover tests/logs/clover.xml
+
+after_success:
+  - composer require --no-progress --no-scripts --no-plugins php-coveralls/php-coveralls
+  - travis_retry php vendor/bin/php-coveralls -v
+
+jobs:
+  include:
+    - php: 8.0
