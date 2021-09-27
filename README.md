@@ -137,10 +137,6 @@ When the `transform` method of the `TransformationMediator` is first called, it 
 For performance reasons every supported transformation is registered with it's input and output class.
 This way, the associations can be used to find a responsible transformer.
 
-Every transformation is cached in an internal array for the runtime of the application call.
-If the `transform` method is called with the exact same input object (determined by the `spl_object_hash` method) and output class name like before, 
-the result is taken from the cache.
-
 ## Contributing
 I am really happy that the software developer community loves Open Source, like I do! ♥
 
