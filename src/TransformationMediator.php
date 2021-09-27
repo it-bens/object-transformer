@@ -25,9 +25,6 @@ final class TransformationMediator implements TransformationMediatorInterface
     /** @var bool $transformersPopulated */
     private bool $transformersPopulated = false;
 
-    /** @var array $transformations */
-    private array $transformations;
-
     /**
      * @param iterable $transformers
      */
@@ -38,7 +35,6 @@ final class TransformationMediator implements TransformationMediatorInterface
         // If they require this commander as a construction argument, this leads to a circle reference.
 
         $this->transformersGenerator = $transformers;
-        $this->transformations = [];
     }
 
     /**
@@ -71,49 +67,16 @@ final class TransformationMediator implements TransformationMediatorInterface
             unset($additionalData[self::INPUT_CLASS_NAME]);
         }
 
-        // Check the transformations array (log) if the current transformation was already done.
-        // If so, the stored result can be used. This is a caching mechanism.
-        $previousTransformation = $this->findTransformation($inputClassName, $outputClassName);
-        if (null !== $previousTransformation) {
-            return $previousTransformation->getResult();
-        }
-
         if (!isset($this->transformers[$inputClassName][$outputClassName])) {
             throw UnsupportedInputOutputTypes::new($inputClassName, $outputClassName, $this->transformers);
         }
 
         // Save the transformation to the transformation array (log).
-        $result = $this->transformers[$inputClassName][$outputClassName]->transform(
+        return $this->transformers[$inputClassName][$outputClassName]->transform(
             $inputObject,
             $outputClassName,
             $additionalData
         );
-        $this->transformations[] = new Transformation($inputObject, $outputClassName, $result);
-
-        return $result;
-    }
-
-    /**
-     * @param object $inputObject
-     * @param string $outputClassName
-     * @return Transformation|null
-     */
-    private function findTransformation($inputObject, $outputClassName): ?Transformation
-    {
-        $matchingTransformations = array_values(
-            array_filter(
-                $this->transformations,
-                static function (Transformation $transformation) use ($inputObject, $outputClassName): bool {
-                    return $transformation->equals($inputObject, $outputClassName);
-                }
-            )
-        );
-
-        if (0 === count($matchingTransformations)) {
-            return null;
-        }
-
-        return $matchingTransformations[0];
     }
 
     /**
