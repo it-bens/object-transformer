@@ -12,6 +12,7 @@ final class InvalidDummyTransformerInputNotClass implements TransformerInterface
 {
     public static function supportedTransformations(): array
     {
+        /** @phpstan-ignore-next-line */
         return [['input' => 'Blub.', 'output' => Object2::class]];
     }
 

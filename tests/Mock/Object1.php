@@ -6,14 +6,10 @@ namespace ITB\ObjectTransformer\Tests\Mock;
 
 class Object1
 {
-    /** @var string $someString */
-    public string $someString;
-
     /**
-     * @param $someString
+     * @param string $someString
      */
-    public function __construct($someString)
+    public function __construct(public string $someString)
     {
-        $this->someString = $someString;
     }
 }

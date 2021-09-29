@@ -24,11 +24,11 @@ final class TransformationEnvelopeTest extends TestCase
 
         $testInputClassStamp = $envelope->getStamp(InputClassStamp::class);
         $this->assertInstanceOf(InputClassStamp::class, $testInputClassStamp);
-        $this->assertEquals(Object3::class, $testInputClassStamp->getInputClassName());
+        $this->assertEquals($stamp1, $testInputClassStamp);
 
         $testAdditionalDataStamp = $envelope->getStamp(AdditionalDataStamp::class);
         $this->assertInstanceOf(AdditionalDataStamp::class, $testAdditionalDataStamp);
-        $this->assertEquals('the hell?', $testAdditionalDataStamp->getAdditionalData()['what']);
+        $this->assertEquals($stamp2, $testAdditionalDataStamp);
     }
 
     public function testRemoveStamp(): void
@@ -47,7 +47,7 @@ final class TransformationEnvelopeTest extends TestCase
         $input = new Object1('I\'m Mr. Meeseeks, look at me!');
         $envelope = TransformationEnvelope::wrap(new TransformationEnvelope($input));
 
-        $this->assertEquals('I\'m Mr. Meeseeks, look at me!', $envelope->getInput()->someString);
+        $this->assertEquals($input, $envelope->getInput());
         $this->assertEquals([], $envelope->getStamps());
     }
 
@@ -56,7 +56,7 @@ final class TransformationEnvelopeTest extends TestCase
         $input = new Object1('I\'m Mr. Meeseeks, look at me!');
         $envelope = TransformationEnvelope::wrap($input);
 
-        $this->assertEquals('I\'m Mr. Meeseeks, look at me!', $envelope->getInput()->someString);
+        $this->assertEquals($input, $envelope->getInput());
         $this->assertEquals([], $envelope->getStamps());
     }
 
@@ -68,7 +68,7 @@ final class TransformationEnvelopeTest extends TestCase
         $envelope = TransformationEnvelope::wrap($input, [$stamp1, $stamp2]);
 
         $this->assertCount(1, $envelope->getStamps());
-        $this->assertEquals(Object1::class, $envelope->getStamp(InputClassStamp::class)->getInputClassName());
+        $this->assertEquals($stamp1, $envelope->getStamp(InputClassStamp::class));
     }
 
     public function testWrapOverrideStamp(): void
@@ -86,8 +86,8 @@ final class TransformationEnvelopeTest extends TestCase
         ]);
 
         $this->assertCount(2, $envelope->getStamps());
-        $this->assertEquals(Object3::class, $envelope->getStamp(InputClassStamp::class)->getInputClassName());
-        $this->assertEquals(2, $envelope->getStamp(AdditionalDataStamp::class)->getAdditionalData()['test']);
+        $this->assertEquals($inputClassStamp2, $envelope->getStamp(InputClassStamp::class));
+        $this->assertEquals($additionalDataStamp2, $envelope->getStamp(AdditionalDataStamp::class));
     }
 
     public function testWrapWithDifferentStamps(): void
@@ -97,7 +97,7 @@ final class TransformationEnvelopeTest extends TestCase
         $stamp2 = new AdditionalDataStamp(['what' => 'the hell?']);
         $envelope = TransformationEnvelope::wrap($input, [$stamp1, $stamp2]);
 
-        $this->assertEquals('I\'m Mr. Meeseeks, look at me!', $envelope->getInput()->someString);
+        $this->assertEquals($input, $envelope->getInput());
         $this->assertCount(2, $envelope->getStamps());
     }
 
@@ -107,14 +107,16 @@ final class TransformationEnvelopeTest extends TestCase
         $stamp = new Object2(0);
 
         $this->expectException(NotATransformationStamp::class);
+        /** @phpstan-ignore-next-line */
         TransformationEnvelope::wrap($input, [$stamp]);
     }
 
     public function testWrapWithoutStamps(): void
     {
-        $envelope = TransformationEnvelope::wrap(new Object1('I\'m Mr. Meeseeks, look at me!'));
+        $input = new Object1('I\'m Mr. Meeseeks, look at me!');
+        $envelope = TransformationEnvelope::wrap($input);
 
-        $this->assertEquals('I\'m Mr. Meeseeks, look at me!', $envelope->getInput()->someString);
+        $this->assertEquals($input, $envelope->getInput());
         $this->assertEquals([], $envelope->getStamps());
     }
 }
