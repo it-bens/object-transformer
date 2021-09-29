@@ -1,6 +1,8 @@
 <?php
 
-namespace ITB\ObjectTransformer\Stamp;
+namespace ITB\ObjectTransformer\Tests\Mock;
+
+use ITB\ObjectTransformer\Stamp\TransformationStampInterface;
 
 final class AdditionalDataStamp implements TransformationStampInterface
 {
