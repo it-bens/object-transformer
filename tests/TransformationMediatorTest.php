@@ -5,24 +5,25 @@ declare(strict_types=1);
 namespace ITB\ObjectTransformer\Tests;
 
 use ArrayObject;
-use ITB\ObjectTransformer\Exception\InvalidAdditionalData;
-use ITB\ObjectTransformer\Exception\InvalidInputObject;
 use ITB\ObjectTransformer\Exception\InvalidOutputClassName;
 use ITB\ObjectTransformer\Exception\InvalidTransformerConfiguration;
 use ITB\ObjectTransformer\Exception\NoTransformers;
 use ITB\ObjectTransformer\Exception\UnsupportedInputOutputTypes;
+use ITB\ObjectTransformer\Stamp\InputClassStamp;
+use ITB\ObjectTransformer\Tests\Mock\DummyTransformer;
+use ITB\ObjectTransformer\Tests\Mock\InvalidDummyTransformerInputNotClass;
+use ITB\ObjectTransformer\Tests\Mock\InvalidDummyTransformerInputNotString;
+use ITB\ObjectTransformer\Tests\Mock\InvalidDummyTransformerNoInput;
+use ITB\ObjectTransformer\Tests\Mock\InvalidDummyTransformerNoOutput;
+use ITB\ObjectTransformer\Tests\Mock\InvalidDummyTransformerOutputNotClass;
+use ITB\ObjectTransformer\Tests\Mock\InvalidDummyTransformerOutputNotString;
+use ITB\ObjectTransformer\Tests\Mock\Object1;
+use ITB\ObjectTransformer\Tests\Mock\Object2;
+use ITB\ObjectTransformer\Tests\Mock\Object3;
+use ITB\ObjectTransformer\TransformationEnvelope;
 use ITB\ObjectTransformer\TransformationMediator;
-use ITB\ObjectTransformerTestUtilities\DummyTransformer;
-use ITB\ObjectTransformerTestUtilities\InvalidDummyTransformerInputNotClass;
-use ITB\ObjectTransformerTestUtilities\InvalidDummyTransformerInputNotString;
-use ITB\ObjectTransformerTestUtilities\InvalidDummyTransformerNoInput;
-use ITB\ObjectTransformerTestUtilities\InvalidDummyTransformerNoOutput;
-use ITB\ObjectTransformerTestUtilities\InvalidDummyTransformerOutputNotClass;
-use ITB\ObjectTransformerTestUtilities\InvalidDummyTransformerOutputNotString;
-use ITB\ObjectTransformerTestUtilities\Object1;
-use ITB\ObjectTransformerTestUtilities\Object2;
-use ITB\ObjectTransformerTestUtilities\Object3;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 final class TransformationMediatorTest extends TestCase
 {
@@ -46,11 +47,14 @@ final class TransformationMediatorTest extends TestCase
 
     public function testTransformExplicitInputClassName(): void
     {
-        $object1 = new Object3('I\'m Mr. Meeseeks, look at me!');
-        $result = $this->mediator->transform($object1, Object2::class, ['inputClassName' => Object1::class]);
+        $envelope = new TransformationEnvelope(
+            new Object3('I\'m Mr. Meeseeks, look at me!'),
+            [new InputClassStamp(Object1::class)]
+        );
+        $result = $this->mediator->transform($envelope, Object2::class);
 
         $this->assertInstanceOf(Object2::class, $result);
-        $this->assertEquals(strlen($object1->someString), $result->letterCount);
+        $this->assertEquals(strlen($envelope->getInput()->someString), $result->letterCount);
     }
 
     public function testTransformInvalidInputType(): void
@@ -72,7 +76,7 @@ final class TransformationMediatorTest extends TestCase
 
     public function testTransformInvalidInputObjectNotObject(): void
     {
-        $this->expectException(InvalidInputObject::class);
+        $this->expectException(TypeError::class);
         $this->mediator->transform(1337, Object2::class);
     }
 
@@ -80,7 +84,7 @@ final class TransformationMediatorTest extends TestCase
     {
         $object1 = new Object1('I\'m Mr. Meeseeks, look at me!');
 
-        $this->expectException(InvalidOutputClassName::class);
+        $this->expectException(TypeError::class);
         $this->mediator->transform($object1, 42);
     }
 
@@ -90,14 +94,6 @@ final class TransformationMediatorTest extends TestCase
 
         $this->expectException(InvalidOutputClassName::class);
         $this->mediator->transform($object1, '');
-    }
-
-    public function testTransformInvalidAdditionalDataNotArray(): void
-    {
-        $object1 = new Object1('I\'m Mr. Meeseeks, look at me!');
-
-        $this->expectException(InvalidAdditionalData::class);
-        $this->mediator->transform($object1, Object2::class, 'I\'m in danger');
     }
 
     public function testTransformInvalidTransformerConfigurationNoInput(): void
