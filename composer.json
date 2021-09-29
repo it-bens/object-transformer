@@ -15,8 +15,7 @@
   "require-dev": {
     "captainhook/plugin-composer": "^5.3",
     "phpunit/phpunit": "^9.5",
-    "roave/security-advisories": "dev-latest",
-    "it-bens/object-transformer-test-utilities": "*@dev"
+    "roave/security-advisories": "dev-latest"
   },
   "config": {
     "optimize-autoloader": true,
