@@ -6,14 +6,10 @@ namespace ITB\ObjectTransformer\Tests\Mock;
 
 final class Object2
 {
-    /** @var int $letterCount */
-    public int $letterCount;
-
     /**
-     * @param $letterCount
+     * @param int $letterCount
      */
-    public function __construct($letterCount)
+    public function __construct(public int $letterCount)
     {
-        $this->letterCount = $letterCount;
     }
 }

@@ -6,6 +6,9 @@ namespace ITB\ObjectTransformer;
 
 interface TransformerInterface
 {
+    /**
+     * @return array<array{"input": class-string, "output": class-string}>
+     */
     public static function supportedTransformations(): array;
 
     /**

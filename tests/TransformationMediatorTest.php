@@ -39,6 +39,7 @@ final class TransformationMediatorTest extends TestCase
     public function testTransform(): void
     {
         $object1 = new Object1('I\'m Mr. Meeseeks, look at me!');
+        /** @var Object2 $result */
         $result = $this->mediator->transform($object1, Object2::class);
 
         $this->assertInstanceOf(Object2::class, $result);
@@ -47,14 +48,16 @@ final class TransformationMediatorTest extends TestCase
 
     public function testTransformExplicitInputClassName(): void
     {
+        $input = new Object3('I\'m Mr. Meeseeks, look at me!');
         $envelope = new TransformationEnvelope(
-            new Object3('I\'m Mr. Meeseeks, look at me!'),
+            $input,
             [new InputClassStamp(Object1::class)]
         );
+        /** @var Object2 $result */
         $result = $this->mediator->transform($envelope, Object2::class);
 
         $this->assertInstanceOf(Object2::class, $result);
-        $this->assertEquals(strlen($envelope->getInput()->someString), $result->letterCount);
+        $this->assertEquals(strlen($input->someString), $result->letterCount);
     }
 
     public function testTransformInvalidInputType(): void
@@ -77,6 +80,7 @@ final class TransformationMediatorTest extends TestCase
     public function testTransformInvalidInputObjectNotObject(): void
     {
         $this->expectException(TypeError::class);
+        /** @phpstan-ignore-next-line */
         $this->mediator->transform(1337, Object2::class);
     }
 
@@ -85,6 +89,7 @@ final class TransformationMediatorTest extends TestCase
         $object1 = new Object1('I\'m Mr. Meeseeks, look at me!');
 
         $this->expectException(TypeError::class);
+        /** @phpstan-ignore-next-line */
         $this->mediator->transform($object1, 42);
     }
 

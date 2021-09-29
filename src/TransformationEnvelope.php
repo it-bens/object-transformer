@@ -55,10 +55,10 @@ final class TransformationEnvelope
     }
 
     /**
-     * @param $type
+     * @param string $type
      * @return TransformationStampInterface|null
      */
-    public function getStamp($type): ?TransformationStampInterface
+    public function getStamp(string $type): ?TransformationStampInterface
     {
         return $this->stamps[$type] ?? null;
     }
@@ -72,9 +72,9 @@ final class TransformationEnvelope
     }
 
     /**
-     * @param $type
+     * @param string $type
      */
-    public function removeStamp($type): void
+    public function removeStamp(string $type): void
     {
         unset($this->stamps[$type]);
     }

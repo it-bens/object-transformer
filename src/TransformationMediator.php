@@ -9,21 +9,22 @@ use ITB\ObjectTransformer\Exception\NoTransformers;
 use ITB\ObjectTransformer\Exception\UnsupportedInputOutputTypes;
 use ITB\ObjectTransformer\Stamp\InputClassStamp;
 use ITB\ObjectTransformer\Validation\TransformerConfigurationValidator;
+use Traversable;
 
 final class TransformationMediator implements TransformationMediatorInterface
 {
     /**
-     * @var TransformerInterface[][][]
+     * @var TransformerInterface[][]
      */
     private array $transformers = [];
 
-    /** @var iterable $transformersGenerator */
+    /** @var Traversable<TransformerInterface> $transformersGenerator */
     private iterable $transformersGenerator;
     /** @var bool $transformersPopulated */
     private bool $transformersPopulated = false;
 
     /**
-     * @param iterable $transformers
+     * @param Traversable<TransformerInterface> $transformers
      */
     public function __construct(iterable $transformers)
     {
@@ -83,7 +84,6 @@ final class TransformationMediator implements TransformationMediatorInterface
         // This allows 'categorizing' the transformers at service construction.
 
         foreach ($this->transformersGenerator as $transformer) {
-            /** @var TransformerInterface $transformer */
             foreach ($transformer::supportedTransformations() as $transformerConfiguration) {
                 TransformerConfigurationValidator::validate($transformerConfiguration);
 

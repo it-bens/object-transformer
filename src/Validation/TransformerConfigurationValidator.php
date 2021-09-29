@@ -8,7 +8,10 @@ use ITB\ObjectTransformer\Exception\InvalidTransformerConfiguration;
 
 final class TransformerConfigurationValidator
 {
-    public static function validate($transformerConfiguration): void
+    /**
+     * @param array{"input": class-string, "output": class-string} $transformerConfiguration
+     */
+    public static function validate(array $transformerConfiguration): void
     {
         if (!array_key_exists('input', $transformerConfiguration)) {
             throw InvalidTransformerConfiguration::inputMissing();

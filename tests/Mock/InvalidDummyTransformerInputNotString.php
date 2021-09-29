@@ -12,6 +12,7 @@ final class InvalidDummyTransformerInputNotString implements TransformerInterfac
 {
     public static function supportedTransformations(): array
     {
+        /** @phpstan-ignore-next-line */
         return [['input' => 1337, 'output' => Object2::class]];
     }
 

@@ -7,6 +7,7 @@ use ITB\ObjectTransformer\Stamp\TransformationStampInterface;
 final class AdditionalDataStamp implements TransformationStampInterface
 {
     /**
+     * @phpstan-ignore-next-line
      * @param array $additionalData
      * @param int $priority
      */
@@ -15,6 +16,7 @@ final class AdditionalDataStamp implements TransformationStampInterface
     }
 
     /**
+     * @phpstan-ignore-next-line
      * @return array
      */
     public function getAdditionalData(): array

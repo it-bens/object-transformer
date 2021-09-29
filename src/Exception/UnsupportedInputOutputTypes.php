@@ -9,6 +9,12 @@ use ITB\ObjectTransformer\TransformerInterface;
 
 final class UnsupportedInputOutputTypes extends InvalidArgumentException
 {
+    /**
+     * @param string $inputClassName
+     * @param string $outputClassName
+     * @param TransformerInterface[][] $transformers
+     * @return static
+     */
     public static function new(
         string $inputClassName,
         string $outputClassName,
