@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace ITB\ObjectTransformer;
 
+use ITB\ObjectTransformer\Exception\InvalidOutputClassName;
 use ITB\ObjectTransformer\Exception\NoTransformers;
 use ITB\ObjectTransformer\Exception\UnsupportedInputOutputTypes;
-use ITB\ObjectTransformer\Validation\AdditionalDataValidator;
-use ITB\ObjectTransformer\Validation\InputObjectValidator;
-use ITB\ObjectTransformer\Validation\OutputClassNameValidator;
+use ITB\ObjectTransformer\Stamp\InputClassStamp;
 use ITB\ObjectTransformer\Validation\TransformerConfigurationValidator;
 
 final class TransformationMediator implements TransformationMediatorInterface
 {
-    public const INPUT_CLASS_NAME = 'inputClassName';
-
     /**
      * @var TransformerInterface[][][]
      */
@@ -38,16 +35,16 @@ final class TransformationMediator implements TransformationMediatorInterface
     }
 
     /**
-     * @param object $inputObject
+     * @param object $input
      * @param string $outputClassName
-     * @param array $additionalData
      * @return object
      */
-    public function transform($inputObject, $outputClassName, $additionalData = [])
+    public function transform(object $input, string $outputClassName): object
     {
-        InputObjectValidator::validate($inputObject);
-        OutputClassNameValidator::validate($outputClassName);
-        AdditionalDataValidator::validate($additionalData);
+        $envelope = TransformationEnvelope::wrap($input, []);
+        if (!class_exists($outputClassName)) {
+            throw InvalidOutputClassName::notClass($outputClassName);
+        }
 
         // Populate the transformers array if the commander is used the first time.
         if (false === $this->transformersPopulated) {
@@ -61,10 +58,11 @@ final class TransformationMediator implements TransformationMediatorInterface
         // The actual object class can be misleading for finding a matching transformer.
         // E.g. Doctrine creates proxy classes for the managed entities.
         // However, a transformer would be registered for the actual class and not the proxy class.
-        $inputClassName = get_class($inputObject);
-        if (array_key_exists(self::INPUT_CLASS_NAME, $additionalData)) {
-            $inputClassName = $additionalData[self::INPUT_CLASS_NAME];
-            unset($additionalData[self::INPUT_CLASS_NAME]);
+        $inputClassName = get_class($envelope->getInput());
+        if (null !== $inputClassStamp = $envelope->getStamp(InputClassStamp::class)) {
+            /** @var InputClassStamp $inputClassStamp */
+            $inputClassName = $inputClassStamp->getInputClassName();
+            $envelope->removeStamp(InputClassStamp::class);
         }
 
         if (!isset($this->transformers[$inputClassName][$outputClassName])) {
@@ -72,11 +70,7 @@ final class TransformationMediator implements TransformationMediatorInterface
         }
 
         // Save the transformation to the transformation array (log).
-        return $this->transformers[$inputClassName][$outputClassName]->transform(
-            $inputObject,
-            $outputClassName,
-            $additionalData
-        );
+        return $this->transformers[$inputClassName][$outputClassName]->transform($envelope, $outputClassName);
     }
 
     /**

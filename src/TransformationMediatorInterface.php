@@ -7,10 +7,9 @@ namespace ITB\ObjectTransformer;
 interface TransformationMediatorInterface
 {
     /**
-     * @param object $inputObject
+     * @param object $input
      * @param string $outputClassName
-     * @param array $additionalData
      * @return object
      */
-    public function transform($inputObject, $outputClassName, $additionalData = []);
+    public function transform(object $input, string $outputClassName): object;
 }

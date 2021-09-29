@@ -9,10 +9,9 @@ interface TransformerInterface
     public static function supportedTransformations(): array;
 
     /**
-     * @param object $inputObject
+     * @param TransformationEnvelope $envelope
      * @param string $outputClassName
-     * @param array $additionalData
      * @return object
      */
-    public function transform($inputObject, $outputClassName, $additionalData = []);
+    public function transform(TransformationEnvelope $envelope, string $outputClassName): object;
 }
