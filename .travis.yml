@@ -16,6 +16,7 @@ install:
 script:
   - composer validate --strict --no-check-lock
   - vendor/bin/phpunit -v -c phpunit.xml.dist --coverage-clover tests/logs/clover.xml
+  - vendor/bin/phpstan analyse src tests --level max
 
 after_success:
   - composer require --no-progress --no-scripts --no-plugins php-coveralls/php-coveralls

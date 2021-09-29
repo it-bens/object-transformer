@@ -9,24 +9,27 @@ case ${COMMAND} in
         docker-compose up -d
         ;;
     "composer-install")
-        docker-compose run --rm -T composer composer install --ignore-platform-reqs
+        docker-compose run --rm -T composer composer install
         ;;
     "composer-update")
-        docker-compose run --rm -T composer composer update --ignore-platform-reqs "${@:2}"
+        docker-compose run --rm -T composer composer update "${@:2}"
         ;;
     "composer-clean")
         rm -Rf ./vendor ./composer.lock
         ;;
     "composer-require")
-        docker-compose run --rm -T composer composer req --ignore-platform-reqs "${@:2}"
+        docker-compose run --rm -T composer composer req "${@:2}"
         ;;
     "composer-remove")
-        docker-compose run --rm -T composer composer rem --ignore-platform-reqs "${@:2}"
+        docker-compose run --rm -T composer composer rem "${@:2}"
         ;;
-    "style-inspection")
+    "style-check")
         docker-compose run --rm -T composer /root/.composer/vendor/bin/phpcs --standard=PSR1,PSR12 "${@:2}"
         ;;
     "style-fix")
         docker-compose run --rm -T composer /root/.composer/vendor/bin/phpcbf --standard=PSR1,PSR12 "${@:2}"
+        ;;
+    "code-check")
+        docker-compose run --rm -T phpunit vendor/bin/phpstan analyse src tests --level max
         ;;
 esac
