@@ -12,7 +12,7 @@ composer require it-bens/object-transformer
 It requires at least PHP 8, but no other extensions or packages.
 
 ## How to use the Object Transformer?
-First at least one implementation of the `TransformerInterface` has to be created.
+First, at least one implementation of the `TransformerInterface` has to be created.
 ```php
 use ITB\ObjectTransformer\TransformerInterface;
 
@@ -23,7 +23,7 @@ class OptimusPrime implements TransformerInterface
         return [['input' => MissionCity::class, 'output' => Ruins::class]];
     }
     
-    public function transform($inputObject, $outputClassName, $additionalData = [])
+    public function transform(TransformationEnvelope $envelope, string $outputClassName): object
     {
         // This method performs the actual transformation and returns the resulting object.
     }    
@@ -36,7 +36,7 @@ class Megatron implements TransformerInterface
         return [['input' => SamWitwicky::class, 'output' => Corpse::class]];
     }
     
-    public function transform($inputObject, $outputClassName, $additionalData = []) {...}
+    public function transform(TransformationEnvelope $envelope, string $outputClassName): object {...}
 }
 ```
 The input- and output class names are used to register the supported transformations in the `TransformationMediator`.
@@ -56,26 +56,52 @@ After everything is prepared, the `transform` method can be used.
 ```php
 $object1 = new Object1('The hell am I doing here?');
 $object2 = $mediator->transform($object1, Object2::class);
+
+// Explicit envelope usage
+$object2 = $mediator->transform(TransformationEnvelope::wrap($object1), Object2::class);
 ```
-That's it!
+The `transform` method of the `TransformationMediator` can handle any object. If the passed object isn't a `TransformationEnvelope`,
+it will be wrapped with one. So if you don't want to use any stamps (see below), just pass the ordinary object.
+But be aware, that you will always receive a `TransformationEnvelope` in your implementations of `TransformerInterface?`.
 
-## What about the $additionalData?
-To allow the flexible usage of the Object Transformer, additional data can be passed to the `transform` method.
-The passed array is looped through to the `transform` method of the factory (or whatever implements the `TransformerInterface`).
+## What do you mean with "stamp"?
+The envelope and stamp system is inspired, but not identical to the system used by the Symfony messenger component.
+Every object that is passed to the `transform` method of the `TransformationMediator` is wrapped with an `TransformationEnvelope`
+(if it's not already one).
 
-### Problems with extended classes
-There is currently one reserved key in the array, that should not be used in the factory: `inputClassName`.
+Like a real envelope, the `TransformationEnvelope` can carry stamps. Stamps have two tasks:
+1. pass data to the `transform` method of the `TransformerInterface` implementation
+2. provide data that can be used during processing in the `TransformationMediator`
 
-> ⚠ The value with the `inputClassName` key is removed from the array before it's passed to the factory.
+All stamps have to implement the `TransformationStampInterface` and provide a priority.
 
-Because of its internal data flow, the passed input object has to be of the exact same class 
+The main difference to the Symfony messenger component is, that the envelope can only hold one stamp per type.
+If two or more stamps of the same type are passed to the envelope, a later stamp will overwrite an earlier one, 
+if it's priority is higher.
+
+### Looping data through the mediator
+To loop data through the mediator to the transformer, any custom stamp can be passed to the envelope. 
+They won't be touched during processing and are accessible via the envelope:
+```php
+public function transform(TransformationEnvelope $envelope, string $outputClassName): object
+{
+    $customStamp = $envelope->getStamp(CustomStampClass::class); // returns null if the envelope contains no such stamp
+}   
+```
+
+### Data processed by the mediator
+All implementations of the `TransformationStampInterface` provided by this package are used inside the mediator.
+After there usage they are removed from the envelope and are not accessible in the `TransformerInface` implementation.
+
+#### InputClassStamp
+Because of its internal data flow, the passed input object has to be of the exact same class
 that was defined as input in the `supportedTransformations` method of the factory.
 
 This could lead to problems with packages like Doctrine. Doctrine creates proxy classes for managed entities,
-that can be used just like the Entity itself. However, the `TransformationMediator` would not find a matching transformer 
+that can be used just like the Entity itself. However, the `TransformationMediator` would not find a matching transformer
 and throw an exception, because the exact class of the proxy object is not registered for transformation.
 
-That's where the `inputClassName` key comes into play. Let's define some objects first.
+That's where the `InputClassStamp` comes into play. Let's define some objects first.
 ```php
 class Object1
 {
@@ -98,16 +124,15 @@ The following lines would lead to an `UnsupportedInputOutputTypes` exception.
 $object3 = new Object3('The hell am I doing here?');
 $result = $mediator->tranform($object3, Object2::class);
 ```
-With the `inputClassName` key it's working.
+With the `InputClassStamp` it's working.
 ```php
 use ITB\ObjectTransformer\TransformationMediator;
 
-$object3 = new Object3('The hell am I doing here?');
-$result = $mediator->tranform(
-    $object3, 
-    Object2::class, 
-    [TransformationMediator::INPUT_CLASS_NAME => Object1::class]
+$envelope = new \ITB\ObjectTransformer\TransformationEnvelope(
+    new Object3('The hell am I doing here?'),
+    [new InputClassStamp(Object1::class)]
 );
+$result = $mediator->tranform($envelope, Object2::class);
 ```
 
 ## Why does this package exist?
