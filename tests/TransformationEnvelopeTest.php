@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace ITB\ObjectTransformer\Tests;
 
 use ITB\ObjectTransformer\Exception\NotATransformationStamp;
-use ITB\ObjectTransformer\Stamp\AdditionalDataStamp;
 use ITB\ObjectTransformer\Stamp\InputClassStamp;
+use ITB\ObjectTransformer\Tests\Mock\AdditionalDataStamp;
 use ITB\ObjectTransformer\Tests\Mock\Object1;
 use ITB\ObjectTransformer\Tests\Mock\Object2;
 use ITB\ObjectTransformer\Tests\Mock\Object3;
