@@ -1,5 +1,8 @@
+# WIP Commits are not build automatically
+if: type = "api" OR commit_message != "WIP"
+
 language: php
-sudo: false
+os: linux
 dist: xenial
 
 env:
